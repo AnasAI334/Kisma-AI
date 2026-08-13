@@ -23,12 +23,18 @@ function AppRoutes() {
       <Route path="/" element={<Landing />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route path="/dashboard" element={<Dashboard />} />
+      <Route element={<Layout />}>
+        <Route path="/dashboard" element={
+          <ProtectedRoute><Dashboard /></ProtectedRoute>
+        } />
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:id" element={<CourseDetail />} />
-        <Route path="/courses/:id/lessons/:lessonId" element={<LessonView />} />
-        <Route path="/assistant" element={<AIAssistant />} />
+        <Route path="/courses/:id/lessons/:lessonId" element={
+          <ProtectedRoute><LessonView /></ProtectedRoute>
+        } />
+        <Route path="/assistant" element={
+          <ProtectedRoute><AIAssistant /></ProtectedRoute>
+        } />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

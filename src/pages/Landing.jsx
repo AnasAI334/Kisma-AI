@@ -3,10 +3,13 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
 
 export default function Landing() {
-  const [courseCount, setCourseCount] = useState(0)
+  const [courses, setCourses] = useState([])
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    supabase.from('courses').select('id', { count: 'exact', head: true }).then(({ count }) => setCourseCount(count || 0))
+    supabase.from('courses').select('id, title, description, icon, color, category, difficulty').order('title').limit(3).then(({ data }) => {
+      setCourses(data || [])
+    })
   }, [])
 
   return (
@@ -17,16 +20,13 @@ export default function Landing() {
             <span className="logo__mark">K</span>
             <span className="logo__text">Kisma AI</span>
           </Link>
-          <nav className="landing-nav">
-            <a href="#features">Features</a>
-            <a href="#courses">Courses</a>
-            <Link to="/signin" className="btn btn--ghost">Sign in</Link>
-            <Link to="/signup" className="btn btn--primary">Get started</Link>
+          <nav className={`landing-nav ${menuOpen ? 'landing-nav--open' : ''}`}>
+            <a href="#features" onClick={() => setMenuOpen(false)}>Features</a>
+            <a href="#courses" onClick={() => setMenuOpen(false)}>Courses</a>
+            <Link to="/signin" className="btn btn--ghost" onClick={() => setMenuOpen(false)}>Sign in</Link>
+            <Link to="/signup" className="btn btn--primary" onClick={() => setMenuOpen(false)}>Get started</Link>
           </nav>
-          <button className="menu-toggle" aria-label="Toggle menu" onClick={(e) => {
-            const nav = e.target.closest('.landing-header').querySelector('.landing-nav')
-            nav.classList.toggle('landing-nav--open')
-          }}>
+          <button className="menu-toggle" aria-label="Toggle menu" onClick={() => setMenuOpen(o => !o)}>
             <span></span><span></span><span></span>
           </button>
         </div>
@@ -42,7 +42,7 @@ export default function Landing() {
               <Link to="/signup" className="btn btn--primary btn--lg">Start learning free</Link>
               <Link to="/courses" className="btn btn--ghost btn--lg">Browse courses</Link>
             </div>
-            {courseCount > 0 && <p className="hero__stat">{courseCount} courses available</p>}
+            {courses.length > 0 && <p className="hero__stat">{courses.length}+ courses available</p>}
           </div>
           <div className="hero__visual">
             <div className="card-stack">
@@ -93,30 +93,21 @@ export default function Landing() {
           <h2 className="section__title">Popular courses</h2>
           <p className="section__subtitle">Start with a course curated by Kisma AI.</p>
           <div className="grid grid--3">
-            <div className="course-card">
-              <div className="course-card__banner course-card__banner--1">ML</div>
-              <div className="course-card__body">
-                <h3>Machine Learning Basics</h3>
-                <p>Understand the fundamentals of ML models and training.</p>
-                <span className="tag">12 lessons</span>
-              </div>
-            </div>
-            <div className="course-card">
-              <div className="course-card__banner course-card__banner--2">WD</div>
-              <div className="course-card__body">
-                <h3>Modern Web Development</h3>
-                <p>Build responsive apps with React and modern tooling.</p>
-                <span className="tag">18 lessons</span>
-              </div>
-            </div>
-            <div className="course-card">
-              <div className="course-card__banner course-card__banner--3">PY</div>
-              <div className="course-card__body">
-                <h3>Python for Data Science</h3>
-                <p>Analyze data and build visualizations with Python.</p>
-                <span className="tag">15 lessons</span>
-              </div>
-            </div>
+            {courses.map(course => (
+              <Link key={course.id} to={`/courses/${course.id}`} className="course-card">
+                <div className="course-card__banner" style={{ background: course.color }}>
+                  {course.icon}
+                </div>
+                <div className="course-card__body">
+                  <h3>{course.title}</h3>
+                  <p>{course.description}</p>
+                  <div className="course-card__meta">
+                    <span className="tag">{course.category}</span>
+                    <span className="tag tag--muted">{course.difficulty}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
           <div className="section__cta">
             <Link to="/signup" className="btn btn--primary btn--lg">Join Kisma AI</Link>

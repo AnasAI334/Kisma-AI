@@ -314,6 +314,17 @@ h1, h2, h3 { line-height: 1.2; font-weight: 700; }
 .chat-input:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px var(--primary-100); }
 .chat-send { padding: 0.625rem 1.5rem; }
 
+/* ===== Sign-in prompt (course detail) ===== */
+.signin-prompt { display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; background: var(--primary-50); border: 1px solid var(--primary-200); border-radius: var(--radius-md); padding: var(--space-2); }
+.signin-prompt p { color: var(--neutral-700); font-weight: 500; }
+.empty-text { color: var(--neutral-500); }
+
+/* ===== Sidebar auth links ===== */
+.sidebar__auth-links { display: flex; flex-direction: column; gap: 0.5rem; }
+.sidebar__auth-links .btn { color: #fff; }
+.sidebar__auth-links .btn--ghost { color: var(--neutral-300); border-color: var(--neutral-700); }
+.sidebar__auth-links .btn--ghost:hover { border-color: var(--primary-500); color: #fff; }
+
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
   .grid--3 { grid-template-columns: repeat(2, 1fr); }

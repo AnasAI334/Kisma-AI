@@ -1,9 +1,9 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../lib/auth.jsx'
 
 export default function Layout({ children }) {
-  const { profile, signOut } = useAuth()
+  const { session, profile, signOut } = useAuth()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -13,16 +13,16 @@ export default function Layout({ children }) {
   }
 
   const navItems = [
-    { to: '/dashboard', label: 'Dashboard', icon: DashboardIcon },
-    { to: '/courses', label: 'Courses', icon: CoursesIcon },
-    { to: '/assistant', label: 'AI Assistant', icon: AssistantIcon },
-  ]
+    { to: '/dashboard', label: 'Dashboard', icon: DashboardIcon, protected: true },
+    { to: '/courses', label: 'Courses', icon: CoursesIcon, protected: false },
+    { to: '/assistant', label: 'AI Assistant', icon: AssistantIcon, protected: true },
+  ].filter(item => !item.protected || session)
 
   return (
     <div className="app-layout">
       <aside className={`sidebar ${sidebarOpen ? 'sidebar--open' : ''}`}>
         <div className="sidebar__header">
-          <NavLink to="/dashboard" className="logo" onClick={() => setSidebarOpen(false)}>
+          <NavLink to="/" className="logo" onClick={() => setSidebarOpen(false)}>
             <span className="logo__mark">K</span>
             <span className="logo__text">Kisma AI</span>
           </NavLink>
@@ -44,13 +44,20 @@ export default function Layout({ children }) {
           ))}
         </nav>
         <div className="sidebar__footer">
-          <div className="sidebar__user">
-            <div className="avatar">{(profile?.display_name || 'U').charAt(0).toUpperCase()}</div>
-            <div className="sidebar__user-info">
-              <span className="sidebar__user-name">{profile?.display_name || 'Learner'}</span>
-              <button className="sidebar__signout" onClick={handleSignOut}>Sign out</button>
+          {session ? (
+            <div className="sidebar__user">
+              <div className="avatar">{(profile?.display_name || 'U').charAt(0).toUpperCase()}</div>
+              <div className="sidebar__user-info">
+                <span className="sidebar__user-name">{profile?.display_name || 'Learner'}</span>
+                <button className="sidebar__signout" onClick={handleSignOut}>Sign out</button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="sidebar__auth-links">
+              <Link to="/signin" className="btn btn--ghost btn--block" onClick={() => setSidebarOpen(false)}>Sign in</Link>
+              <Link to="/signup" className="btn btn--primary btn--block" onClick={() => setSidebarOpen(false)}>Get started</Link>
+            </div>
+          )}
         </div>
       </aside>
 

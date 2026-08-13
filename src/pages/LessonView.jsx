@@ -47,10 +47,17 @@ export default function LessonView() {
 
     const { data: existing } = await supabase.from('lesson_progress').select('id').eq('user_id', user.id).eq('lesson_id', lessonId).maybeSingle()
 
+    let writeError = false
     if (existing) {
-      await supabase.from('lesson_progress').update({ completed: newCompleted, completed_at: newCompleted ? new Date().toISOString() : null }).eq('id', existing.id)
+      const { error } = await supabase.from('lesson_progress').update({ completed: newCompleted, completed_at: newCompleted ? new Date().toISOString() : null }).eq('id', existing.id)
+      if (error) writeError = true
     } else {
-      await supabase.from('lesson_progress').insert({ user_id: user.id, lesson_id: lessonId, completed: newCompleted, completed_at: newCompleted ? new Date().toISOString() : null })
+      const { error } = await supabase.from('lesson_progress').insert({ user_id: user.id, lesson_id: lessonId, completed: newCompleted, completed_at: newCompleted ? new Date().toISOString() : null })
+      if (error) writeError = true
+    }
+
+    if (writeError) {
+      setCompleted(!newCompleted)
     }
     setToggling(false)
   }
