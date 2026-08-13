@@ -313,6 +313,7 @@ h1, h2, h3 { line-height: 1.2; font-weight: 700; }
 .chat-input { flex: 1; padding: 0.625rem 0.875rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-sm); font-size: 0.9375rem; }
 .chat-input:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px var(--primary-100); }
 .chat-send { padding: 0.625rem 1.5rem; }
+.chat-error { padding: 0.5rem 0.75rem; margin: 0 0.5rem; background: var(--error-50); color: var(--error-700); border-radius: var(--radius-sm); font-size: 0.875rem; }
 
 /* ===== Sign-in prompt (course detail) ===== */
 .signin-prompt { display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; background: var(--primary-50); border: 1px solid var(--primary-200); border-radius: var(--radius-md); padding: var(--space-2); }

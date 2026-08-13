@@ -1,8 +1,8 @@
-import { NavLink, useNavigate, Link } from 'react-router-dom'
+import { NavLink, useNavigate, Link, Outlet } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../lib/auth.jsx'
 
-export default function Layout({ children }) {
+export default function Layout() {
   const { session, profile, signOut } = useAuth()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -72,7 +72,7 @@ export default function Layout({ children }) {
           <div className="topbar__spacer" />
         </header>
         <main className="content">
-          {children}
+          <Outlet />
         </main>
       </div>
     </div>
