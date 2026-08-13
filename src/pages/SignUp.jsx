@@ -1,15 +1,24 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth.jsx'
 
 export default function SignUp() {
-  const { signUp } = useAuth()
+  const { session, loading, signUp } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+
+  const redirectTo = location.state?.from || '/dashboard'
+
+  if (loading) return <div className="full-loader"><div className="spinner" /></div>
+  if (session) {
+    navigate(redirectTo, { replace: true })
+    return null
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -18,13 +27,13 @@ export default function SignUp() {
       setError('Password must be at least 6 characters.')
       return
     }
-    setLoading(true)
+    setSubmitting(true)
     const { data, error } = await signUp(email, password, displayName)
-    setLoading(false)
+    setSubmitting(false)
     if (error) {
       setError(error.message === 'User already registered' ? 'An account with this email already exists.' : error.message)
     } else if (data.user) {
-      navigate('/dashboard')
+      navigate(redirectTo, { replace: true })
     }
   }
 
@@ -51,8 +60,8 @@ export default function SignUp() {
             <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="At least 6 characters" />
           </div>
           {error && <div className="form-error">{error}</div>}
-          <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={loading}>
-            {loading ? 'Creating account...' : 'Create account'}
+          <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={submitting}>
+            {submitting ? 'Creating account...' : 'Create account'}
           </button>
         </form>
         <p className="auth-card__footer">

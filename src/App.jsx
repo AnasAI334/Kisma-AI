@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './lib/auth.jsx'
 import Landing from './pages/Landing.jsx'
 import SignIn from './pages/SignIn.jsx'
@@ -12,8 +12,9 @@ import Layout from './components/Layout.jsx'
 
 function ProtectedRoute({ children }) {
   const { session, loading } = useAuth()
+  const location = useLocation()
   if (loading) return <div className="full-loader"><div className="spinner" /></div>
-  if (!session) return <Navigate to="/signin" replace />
+  if (!session) return <Navigate to="/signin" replace state={{ from: location.pathname }} />
   return children
 }
 

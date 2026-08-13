@@ -1,25 +1,34 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth.jsx'
 
 export default function SignIn() {
-  const { signIn } = useAuth()
+  const { session, loading, signIn } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+
+  const redirectTo = location.state?.from || '/dashboard'
+
+  if (loading) return <div className="full-loader"><div className="spinner" /></div>
+  if (session) {
+    navigate(redirectTo, { replace: true })
+    return null
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setLoading(true)
+    setSubmitting(true)
     const { error } = await signIn(email, password)
-    setLoading(false)
+    setSubmitting(false)
     if (error) {
       setError(error.message === 'Invalid login credentials' ? 'Incorrect email or password.' : error.message)
     } else {
-      navigate('/dashboard')
+      navigate(redirectTo, { replace: true })
     }
   }
 
@@ -42,8 +51,8 @@ export default function SignIn() {
             <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" />
           </div>
           {error && <div className="form-error">{error}</div>}
-          <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+          <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={submitting}>
+            {submitting ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
         <p className="auth-card__footer">

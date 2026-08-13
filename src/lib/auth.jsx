@@ -9,12 +9,16 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    let initialSessionResolved = false
+
     supabase.auth.getSession().then(({ data: { session } }) => {
+      initialSessionResolved = true
       setSession(session)
       if (!session) setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!initialSessionResolved && event === 'INITIAL_SESSION') return
       setSession(session)
       if (!session) {
         setProfile(null)

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../lib/auth.jsx'
 
 export default function CourseDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { session, user } = useAuth()
   const [course, setCourse] = useState(null)
   const [lessons, setLessons] = useState([])
@@ -111,7 +112,7 @@ export default function CourseDetail() {
         {!session ? (
           <div className="signin-prompt">
             <p>Sign in to enroll and track your progress.</p>
-            <Link to="/signin" className="btn btn--primary btn--lg">Sign in to enroll</Link>
+            <Link to="/signin" className="btn btn--primary btn--lg" state={{ from: location.pathname }}>Sign in to enroll</Link>
           </div>
         ) : !enrolled ? (
           <button className="btn btn--primary btn--lg" onClick={handleEnroll} disabled={enrolling}>
@@ -136,10 +137,12 @@ export default function CourseDetail() {
             const lessonLink = session
               ? `/courses/${id}/lessons/${lesson.id}`
               : '/signin'
+            const lessonState = session ? undefined : { from: `/courses/${id}/lessons/${lesson.id}` }
             return (
               <Link
                 key={lesson.id}
                 to={lessonLink}
+                state={lessonState}
                 className={`lesson-item ${isComplete ? 'lesson-item--done' : ''}`}
               >
                 <div className="lesson-item__check">
