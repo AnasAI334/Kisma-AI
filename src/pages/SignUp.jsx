@@ -32,7 +32,7 @@ export default function SignUp() {
     const { data, error } = await signUp(email, password, displayName)
     if (error) {
       setSubmitting(false)
-      setError(error.message === 'User already registered' ? 'An account with this email already exists.' : error.message)
+      setError(error.code === 'user_already_exists' ? 'An account with this email already exists.' : error.message)
     } else if (data.user && !data.session) {
       setSubmitting(false)
       setError('Account created. Please check your email to confirm your account, then sign in.')
