@@ -32,8 +32,8 @@ export default function SignUp() {
     setSubmitting(false)
     if (error) {
       setError(error.message === 'User already registered' ? 'An account with this email already exists.' : error.message)
-    } else if (data.user) {
-      navigate(redirectTo, { replace: true })
+    } else if (data.user && !data.session) {
+      setError('Account created. Please check your email to confirm your account, then sign in.')
     }
   }
 

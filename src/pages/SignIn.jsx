@@ -27,8 +27,6 @@ export default function SignIn() {
     setSubmitting(false)
     if (error) {
       setError(error.message === 'Invalid login credentials' ? 'Incorrect email or password.' : error.message)
-    } else {
-      navigate(redirectTo, { replace: true })
     }
   }
 
