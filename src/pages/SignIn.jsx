@@ -10,6 +10,7 @@ export default function SignIn() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   const redirectTo = location.state?.from || '/dashboard'
 
@@ -24,9 +25,11 @@ export default function SignIn() {
     setError('')
     setSubmitting(true)
     const { error } = await signIn(email, password)
-    setSubmitting(false)
     if (error) {
+      setSubmitting(false)
       setError(error.message === 'Invalid login credentials' ? 'Incorrect email or password.' : error.message)
+    } else {
+      setSuccess(true)
     }
   }
 
@@ -42,15 +45,15 @@ export default function SignIn() {
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="email">Email</label>
-            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" />
+            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" disabled={submitting || success} />
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" />
+            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" disabled={submitting || success} />
           </div>
           {error && <div className="form-error">{error}</div>}
-          <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={submitting}>
-            {submitting ? 'Signing in...' : 'Sign in'}
+          <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={submitting || success}>
+            {success ? 'Signed in! Redirecting...' : submitting ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
         <p className="auth-card__footer">

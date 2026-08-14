@@ -11,6 +11,7 @@ export default function SignUp() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   const redirectTo = location.state?.from || '/dashboard'
 
@@ -29,11 +30,14 @@ export default function SignUp() {
     }
     setSubmitting(true)
     const { data, error } = await signUp(email, password, displayName)
-    setSubmitting(false)
     if (error) {
+      setSubmitting(false)
       setError(error.message === 'User already registered' ? 'An account with this email already exists.' : error.message)
     } else if (data.user && !data.session) {
+      setSubmitting(false)
       setError('Account created. Please check your email to confirm your account, then sign in.')
+    } else {
+      setSuccess(true)
     }
   }
 
@@ -49,19 +53,19 @@ export default function SignUp() {
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="name">Your name</label>
-            <input id="name" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required placeholder="Jane Doe" />
+            <input id="name" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required placeholder="Jane Doe" disabled={submitting || success} />
           </div>
           <div className="form-group">
             <label htmlFor="email">Email</label>
-            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" />
+            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" disabled={submitting || success} />
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="At least 6 characters" />
+            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="At least 6 characters" disabled={submitting || success} />
           </div>
           {error && <div className="form-error">{error}</div>}
-          <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={submitting}>
-            {submitting ? 'Creating account...' : 'Create account'}
+          <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={submitting || success}>
+            {success ? 'Account created! Redirecting...' : submitting ? 'Creating account...' : 'Create account'}
           </button>
         </form>
         <p className="auth-card__footer">
